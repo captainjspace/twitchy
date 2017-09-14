@@ -4,10 +4,10 @@
 * Has gratuitous js to emphasize control of DOM
 * template literals are awesome would never have used those unless going Vanilla
 
-#The app
+# The app
 [Twitchy](https://captainjspace.github.io/twitchy/)
 
-##TODO
+## TODO
 * could do with a refactor pass
 * have fun with all the other data in the stream
 * clean up css/app.css contains somewhat redundant formatting
