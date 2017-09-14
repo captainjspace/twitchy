@@ -23,8 +23,7 @@ class TwitchService {
       xhr.send();
       xhr.onload = () => {
         if (xhr.status == 200) {
-          this._data = JSON.parse(xhr.response);
-          console.log(this._data); //debug
+          this._data = JSON.parse(xhr.response); //could resolve this too...
           resolve(this._data);
         } else {
           reject({status: this.status, statusText: xhr.statusText});

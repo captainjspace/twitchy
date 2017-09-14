@@ -50,7 +50,6 @@ class Pager {
     let pagerHtml = "";
     let start = (this.pageSize * this.currentPage - this.pageSize)
     for (let i = start; i < Math.min((start + this.pageSize), this.items.length); i++) {
-      console.log(i);
       pagerHtml += this.items[i].toDiv();
     }
     let pageContainerHTML = `
