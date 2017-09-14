@@ -87,7 +87,7 @@ class Item {
             <div class="img-container">
               <span></span>
               <img class="stream-image" alt="...Still Loading ${this.img}"
-                   id="${this.id}" src="${this.img}" onClick="launchVideo('${this.channelName}', ${this.channelMature});"/>
+                   id="${this.id}" src="${this.img}" onClick="app.launchVideo('${this.channelName}', ${this.channelMature});"/>
             </div>
           </div>
 

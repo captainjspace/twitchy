@@ -59,11 +59,11 @@ class Pager {
             <span class="small">(limit 100 - retrieved ${this.items.length} - default offset: 0)</span>
           </div>
           <div id="navButtons">
-            <input value="<<" type="button" onclick="pager.currentPage=1; renderView(pager);" />
-            <input value="<" type="button" onclick="pager.prevPage(); renderView(pager);" />
+            <input value="<<" type="button" onclick="app.first()" />
+            <input value="<" type="button" onclick="app.prev();" />
             (page)${this.currentPage} of ${this.pageCount}
-            <input value=">" type="button" onclick="pager.nextPage(); renderView(pager);" />
-            <input value=">>" type="button" onclick="pager.currentPage=pager.pageCount; renderView(pager);" />
+            <input value=">" type="button" onclick="app.next()" />
+            <input value=">>" type="button" onclick="app.last()" />
           </div>
         </div>
         <div id="itemDisplay">
