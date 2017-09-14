@@ -30,7 +30,7 @@
 * have fun with all the other data in the stream
 * clean up css/app.css contains some redundant formatting
 * main app.js functions should be refined into single object
-* JSToken from Twitch for cleaner integration
+* JWT Token from Twitch for cleaner integration
 * TwitchService should leverage offset to collect every stream
 * pre-build image cache more aggressively
 * maybe do something with bigger images in bg could be useful
