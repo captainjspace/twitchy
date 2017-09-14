@@ -44,7 +44,8 @@ class Pager {
 
   /*
    * Rebuild the pager body html
-   * can be optimized further...
+   * optimize further by making smaller objects
+   * (i.e., avoid click event re-attachment)
    */
   toDiv() {
     let pagerHtml = "";

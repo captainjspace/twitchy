@@ -1,5 +1,11 @@
-/* this is the constant header and first child Node of the body - note the video player */
-const initial = `
+/* seed search */
+const seedSearch = 'destiny';
+
+/*
+ * this is the constant header and first child Node of the body - note the video player
+ * could add all this via js, but I demonstrate that below in init function
+ */
+const mastHTML = `
     <div class="flex-column">
       <div id="sonyLogo">
         <img src="img/navigation_home_ps-logo-us.png">
@@ -25,9 +31,17 @@ const initial = `
  */
 class App {
   constructor() {
-    this._pager = {};
+    this._initState = false;
+    this._pager = undefined;
   }
 
+  //getter-setter
+  get initState() {
+    return this._initState;
+  }
+  set initState(initState) {
+    this._initState = initState;
+  }
   get pager() {
     return this._pager;
   }
@@ -35,11 +49,14 @@ class App {
     this._pager = pager;
   }
 
+  //app methods
   /*
    * select the relevant json data and create an item for the pager
    * @param {object} data - json object of Twitch response body
    */
   setItems(data) {
+    if (data === undefined) return false;
+
     let items = [];
     for (let x of data.streams) {
       /* too many items to cleanly use a constructor */
@@ -58,7 +75,7 @@ class App {
     /* set pager and render view */
     this.pager = new Pager(items, data._total, 5);
     this.renderView(this.pager);
-    return false;
+    return true;
   }
 
   /*
@@ -66,31 +83,41 @@ class App {
    * @param {Pager} pager - pager contains all parsed items and nav data
    */
   renderView() {
+    if (this.pager === undefined ) return false;
+
     var pagerBody = document.getElementById("pagerBody");
     /* create it if it doesn't exist */
     if (!pagerBody) {
       pagerBody = document.createElement('div');
       pagerBody.id = 'pagerBody';
-      document.body.appendChild(pagerBody);
+      document.getElementById('app').appendChild(pagerBody);
     }
     pagerBody.innerHTML = this.pager.toDiv();
-    return false;
+    return true;
   }
 
-  /* app movement wrappers */
+  /*
+   * app movement wrappers -
+   * could remove pager checks, since init is forced,
+   * and pager will always be accesible
+   */
   first() {
+    if (this.pager === undefined ) return false;
     this.pager.currentPage=1;
     this.renderView();
   }
   prev() {
+    if (this.pager === undefined ) return false;
     this.pager.prevPage();
     this.renderView();
   }
   next() {
+    if (this.pager === undefined ) return false;
     this.pager.nextPage();
     this.renderView();
   }
   last() {
+    if (this.pager === undefined ) return false;
     this.pager.currentPage=this.pager.pageCount;
     this.renderView();
   }
@@ -98,6 +125,7 @@ class App {
    * call twitch service with promises
    */
   executeSearch() {
+    if (!this.initState) return false;
     let query = document.getElementById('gameQuery').value;
     let dataService = new TwitchService();
     dataService.getStreamData(query).then((response) => {
@@ -105,7 +133,8 @@ class App {
     }).catch((err) => {
       console.log(err);
     });
-    return false;
+    localStorage.setItem('search', query);
+    return true;
   }
 
   /*
@@ -119,7 +148,8 @@ class App {
       //mature content cannot be viewed anonymously
       alert('Mature channel access not allowed');
     } else {
-      document.getElementById('vidPlayer').src = url
+      document.getElementById('vidPlayer').src = url;
+      return true;
     };
     return false;
   }
@@ -128,20 +158,38 @@ class App {
    * Initiailize application screen
    */
    init() {
-     /* just demonstrating manipulation of style from js and attaching listeners */
+
+     if (this.initState === true) return false;
+
+     /* just demonstrating manipulation of style/DOM from js and attaching listeners */
+     let appHTMLContainer = document.createElement('div');
+     appHTMLContainer.id = 'app';
+     /* query form */
      let queryForm = document.createElement('div');
      queryForm.id = 'queryForm';
      queryForm.className = "container";
      queryForm.style.border = "1px solid black";
-     queryForm.innerHTML = initial;
-     document.body.appendChild(queryForm);
 
+
+     //see constant above, could do this all in js...
+     queryForm.innerHTML = mastHTML;
+
+     /* init screen */
+     appHTMLContainer.appendChild(queryForm);
+     document.body.appendChild(appHTMLContainer);
+
+     /* initialize, attach 'return' submit listener to text box */
      let el = document.getElementById('gameQuery');
+     let lastSearch = localStorage.getItem('search');
+     el.value = (lastSearch) ? lastSearch : seedSearch; //initialize
      el.addEventListener('keypress', function(e) {
        if (e.keyCode == 13) {
          app.executeSearch();
        }
      });
+     this.initState = true;
+     app.executeSearch();
+     return this.initState;
    }
 }
 /* pager is the main content - twitch navigation tool */
