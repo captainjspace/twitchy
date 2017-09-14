@@ -82,7 +82,7 @@ function executeSearch() {
  * @param {boolean} mature - is the channel for mature audiences
  */
 function launchVideo(channelName, mature) {
-  let url='http://player.twitch.tv/?muted=false&channel='+channelName;
+  let url='https://player.twitch.tv/?muted=false&channel='+channelName;
   if (mature) {
     //mature content cannot be viewed anonymously
     alert ('Mature channel access not allowed');
