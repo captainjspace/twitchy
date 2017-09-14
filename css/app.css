@@ -1,0 +1,122 @@
+html, body {
+  background: -webkit-linear-gradient(#0072CE, #003087);
+  color: white;
+  font-weight: 200;
+}
+div.container {
+  width: 800px;
+  border: 1px solid black;
+  padding-top: 5px;
+}
+div#sonyLogo {
+  flex: 0 0 auto;
+  width: 35%;
+  text-align: left;
+}
+div#searchBox {
+  flex: 0 0 auto;
+  padding-top:35px;
+  padding-left: 20px;
+  text-align: center;
+}
+div#tv {
+  flex: 0 0;
+  padding-left: 120px;
+  text-align:right;
+}
+#vidPlayer {
+  align:right;
+  height: 100px;
+  width: 150px;
+  overflow: none;
+  border: 0;
+  /*border: 1px dotted #c00;*/
+}
+div#queryForm {
+  padding-bottom: 10px;
+  padding-top: 20px;
+}
+
+div.flex-column {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  flex-flow: row nowrap;
+}
+
+/*
+Pager Style
+*/
+
+div.pager {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+
+div#total {
+  width: 50%;
+  padding: 10px 0px 5px 10px;
+  flex: 0 0 400px;
+}
+
+div#navButtons {
+  flex: 0 1 auto;
+  text-align:right;
+  width: 50%;
+  padding: 10px 5px 5px 10px;
+}
+
+span.small {
+  font-size: 7pt;
+  font-style: italic;
+}
+
+/*
+Item Style
+*/
+div.item {
+  display: flex;
+  height: 114px;
+}
+
+div.img-container {
+  padding-right: 20pt;
+  margin: 10px 10px 10px 10px;
+  border: 1px solid black;
+}
+
+div.txt-container {
+  width: 500px;
+  padding-right: 5pt;
+  margin: 10px 10px 10px 10px;
+  border-bottom: 2px solid white;
+  overflow-y: scroll;
+}
+
+div.streamDisplayName {
+  font-size: 14pt;
+  font-weight: bold;
+}
+
+span.field-name {
+  font-style: italic;
+}
+img {
+  margin: 10px 10px 10px 10px;
+  padding: 10px 5px 5px 10px;
+}
+img.stream-image {
+  transition: 0.3s ease;
+}
+
+img.stream-image:hover {
+  transform: scale(2, 2);
+  opacity: 1;
+}
