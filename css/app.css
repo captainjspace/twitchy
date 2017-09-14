@@ -30,7 +30,6 @@ div#tv {
   width: 150px;
   overflow: none;
   border: 0;
-  /*border: 1px dotted #c00;*/
 }
 div#queryForm {
   padding-bottom: 10px;
