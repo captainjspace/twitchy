@@ -3,34 +3,40 @@ html, body {
   color: white;
   font-weight: 200;
 }
+
 div.container {
   width: 800px;
   border: 1px solid black;
   padding-top: 5px;
 }
+
 div#sonyLogo {
   flex: 0 0 auto;
   width: 35%;
   text-align: left;
 }
+
 div#searchBox {
   flex: 0 0 auto;
-  padding-top:35px;
+  padding-top: 35px;
   padding-left: 20px;
   text-align: center;
 }
+
 div#tv {
   flex: 0 0;
   padding-left: 120px;
-  text-align:right;
+  text-align: right;
 }
+
 #vidPlayer {
-  align:right;
+  align: right;
   height: 100px;
   width: 150px;
   overflow: none;
   border: 0;
 }
+
 div#queryForm {
   padding-bottom: 10px;
   padding-top: 20px;
@@ -44,6 +50,7 @@ div.flex-column {
   flex-wrap: nowrap;
   flex-flow: row nowrap;
 }
+
 
 /*
 Pager Style
@@ -67,7 +74,7 @@ div#total {
 
 div#navButtons {
   flex: 0 1 auto;
-  text-align:right;
+  text-align: right;
   width: 50%;
   padding: 10px 5px 5px 10px;
 }
@@ -77,18 +84,27 @@ span.small {
   font-style: italic;
 }
 
+
 /*
 Item Style
 */
+
 div.item {
   display: flex;
   height: 114px;
+}
+
+div.img-container-spacer {
+  width: 165px;
+  height: 114px;
+  flex-shrink: 0;
 }
 
 div.img-container {
   padding-right: 20pt;
   margin: 10px 10px 10px 10px;
   border: 1px solid black;
+  flex-shrink: 0;
 }
 
 div.txt-container {
@@ -104,13 +120,35 @@ div.streamDisplayName {
   font-weight: bold;
 }
 
+div.txt-container:hover div.raw {
+  visibility: visible;
+  opacity: 1;
+}
+
+div.raw {
+  visibility:hidden;
+  opacity:0;
+  -webkit-transition:visibility 1.2s linear,opacity 1.2s linear; width 1.2s;
+  transition:visibility 1.2s linear,opacity 1.2s linear; width 1.2s;
+  position: fixed;
+  top: 110px;
+  left: 820px;
+  overflow:scroll;
+}
+div.raw:hover {
+  height:558px;
+  width:300px;
+}
+
 span.field-name {
   font-style: italic;
 }
+
 img {
   margin: 10px 10px 10px 10px;
   padding: 10px 5px 5px 10px;
 }
+
 img.stream-image {
   transition: 0.3s ease;
 }

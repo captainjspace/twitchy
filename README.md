@@ -14,8 +14,11 @@
 * item code will be loading in bg but leaves cache mgmt to browser
 * images over http vs https - video had to be https
 * images expand on rollover, click and vid player will load
+* [x] raw stream data displayed at right, css uses GPU
 * click is cancelled if the twitch channel is marked mature
-* expanded limit to 100, did not add offset loop but would ...
+* [x]expanded limit to 100, did not add offset
+  * [x] modified chunks to 50
+  * [x] added offset loop async
 
 # Note
 * Twitch is phasing out JSONP - it's on their docs page.
@@ -24,15 +27,17 @@
   * Avoids unnecessary manipulation of the DOM
   * Looks cleaner than JSONP, has more info, more error information.
 * Can redo TwitchService JSONP style if that's important :)
+* [Link: _total does not equal actual # of live streams](https://discuss.dev.twitch.tv/t/issues-with-stream-searching/8052)
 
 ## TODO
-* could do with a refactor pass
+* [x] could do with a refactor pass
+  * and another
 * have fun with all the other data in the stream
 * clean up css/app.css contains some redundant formatting
-* main app.js functions should be refined into single object
+* [x] main app.js functions should be refined into single object
 * JWT Token from Twitch for cleaner integration
-* TwitchService should leverage offset to collect every stream
-* pre-build image cache more aggressively
+* [x] TwitchService should leverage offset to collect every stream
+* [x] pre-build image cache more aggressively
 * maybe do something with bigger images in bg could be useful
 * proper responsive design, functional but wide on my iPhone...
 * tests...

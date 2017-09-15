@@ -33,6 +33,7 @@ class App {
   constructor() {
     this._initState = false;
     this._pager = undefined;
+    this._currentSearch = "";
   }
 
   //getter-setter
@@ -42,6 +43,12 @@ class App {
   set initState(initState) {
     this._initState = initState;
   }
+  get currentSearch() {
+    return this._currentSearch;
+  }
+  set currentSearch(currentSearch) {
+    this._currentSearch = currentSearch;
+  }
   get pager() {
     return this._pager;
   }
@@ -50,13 +57,8 @@ class App {
   }
 
   //app methods
-  /*
-   * select the relevant json data and create an item for the pager
-   * @param {object} data - json object of Twitch response body
-   */
-  setItems(data) {
-    if (data === undefined) return false;
-
+  /* creates items from twitch JSON (parsed) */
+  parseItems(data) {
     let items = [];
     for (let x of data.streams) {
       /* too many items to cleanly use a constructor */
@@ -69,12 +71,24 @@ class App {
       i.description = x.channel.description;
       i.channelName = x.channel.name;
       i.channelMature = x.channel.mature;
+      i.raw = x;
       items.push(i);
     }
+    return items;
+  }
 
-    /* set pager and render view */
-    this.pager = new Pager(items, data._total, 5);
+  /*
+   * select the relevant json data and create an item for the pager
+   * @param {object} data - json object of Twitch response body
+   */
+  initPager(data) {
+    if (data === undefined)
+      return false;
+
+    /* parse itesms, set pager and render view, then call lazyLoad */
+    this.pager = new Pager(this.parseItems(data), data._total, 5);
     this.renderView(this.pager);
+    this.lazyLoad();
     return true;
   }
 
@@ -83,7 +97,8 @@ class App {
    * @param {Pager} pager - pager contains all parsed items and nav data
    */
   renderView() {
-    if (this.pager === undefined ) return false;
+    if (this.pager === undefined && this.pager.pagerState === true)
+      return false;
 
     var pagerBody = document.getElementById("pagerBody");
     /* create it if it doesn't exist */
@@ -92,7 +107,9 @@ class App {
       pagerBody.id = 'pagerBody';
       document.getElementById('app').appendChild(pagerBody);
     }
+    /* could be more efficient than full div replace here */
     pagerBody.innerHTML = this.pager.toDiv();
+    this.pager.pagerState = false;
     return true;
   }
 
@@ -102,38 +119,77 @@ class App {
    * and pager will always be accesible
    */
   first() {
-    if (this.pager === undefined ) return false;
-    this.pager.currentPage=1;
+    if (this.pager === undefined)
+      return false;
+    this.pager.currentPage = 1;
     this.renderView();
   }
   prev() {
-    if (this.pager === undefined ) return false;
+    if (this.pager === undefined)
+      return false;
     this.pager.prevPage();
     this.renderView();
   }
   next() {
-    if (this.pager === undefined ) return false;
+    if (this.pager === undefined)
+      return false;
     this.pager.nextPage();
     this.renderView();
   }
   last() {
-    if (this.pager === undefined ) return false;
-    this.pager.currentPage=this.pager.pageCount;
+    if (this.pager === undefined)
+      return false;
+    this.pager.currentPage = this.pager.pageCount;
     this.renderView();
   }
+
+  /* container function for pager nav updates while lazy loading */
+  updatePagerNav(offset) {
+    document.getElementById('retrieved').textContent = this.pager.items.length;
+    document.getElementById('lastOffset').textContent = this.pager.lastOffset;
+    document.getElementById('currentPageCount').textContent = this.pager.pageCount;
+    document.getElementById('variance').textContent = this.pager.total-this.pager.items.length;
+  }
+
   /*
-   * call twitch service with promises
+   * lazyLoad kicks loops kicks of async requests to get all streams up to the expected total
+   * the variance is tracked in pager, twitch totals seem out of sync with actual live streams
+   */
+  lazyLoad() {
+    const chunk = 50;
+    let dataService = new TwitchService();
+    let max = this.pager.total;
+
+    let offset = chunk;
+    while (offset < max) {
+      dataService.getStreamData(this.currentSearch, offset).then((response) => {
+        let _offset=offset
+        let items = this.parseItems(response);
+        this.pager.addItems(items);
+        this.pager.lastOffset=offset;
+        this.updatePagerNav(offset);
+        this.pager.sort();
+      }).catch((err) => {
+        console.log(err);
+      });
+      offset+=chunk;
+    }
+    return true;
+  }
+  /*
+   * new search calls twitch service with promises
    */
   executeSearch() {
-    if (!this.initState) return false;
-    let query = document.getElementById('gameQuery').value;
+    if (!this.initState)
+      return false;
+    this.currentSearch = document.getElementById('gameQuery').value;
     let dataService = new TwitchService();
-    dataService.getStreamData(query).then((response) => {
-      this.setItems(response);
+    dataService.getStreamData(this.currentSearch).then((response) => {
+      this.initPager(response);
     }).catch((err) => {
       console.log(err);
     });
-    localStorage.setItem('search', query);
+    localStorage.setItem('search', this.currentSearch);
     return true;
   }
 
@@ -157,40 +213,43 @@ class App {
   /*
    * Initiailize application screen
    */
-   init() {
+  init() {
 
-     if (this.initState === true) return false;
+    if (this.initState === true)
+      return false;
 
-     /* just demonstrating manipulation of style/DOM from js and attaching listeners */
-     let appHTMLContainer = document.createElement('div');
-     appHTMLContainer.id = 'app';
-     /* query form */
-     let queryForm = document.createElement('div');
-     queryForm.id = 'queryForm';
-     queryForm.className = "container";
-     queryForm.style.border = "1px solid black";
+    /* just demonstrating manipulation of style/DOM from js and attaching listeners */
+    let appHTMLContainer = document.createElement('div');
+    appHTMLContainer.id = 'app';
+    appHTMLContainer.style.width='800px';
+    /* query form */
+    let queryForm = document.createElement('div');
+    queryForm.id = 'queryForm';
+    queryForm.className = "container";
+    queryForm.style.border = "1px solid black";
 
+    //see constant above, could do this all in js...
+    queryForm.innerHTML = mastHTML;
 
-     //see constant above, could do this all in js...
-     queryForm.innerHTML = mastHTML;
+    /* init screen */
+    appHTMLContainer.appendChild(queryForm);
+    document.body.appendChild(appHTMLContainer);
 
-     /* init screen */
-     appHTMLContainer.appendChild(queryForm);
-     document.body.appendChild(appHTMLContainer);
-
-     /* initialize, attach 'return' submit listener to text box */
-     let el = document.getElementById('gameQuery');
-     let lastSearch = localStorage.getItem('search');
-     el.value = (lastSearch) ? lastSearch : seedSearch; //initialize
-     el.addEventListener('keypress', function(e) {
-       if (e.keyCode == 13) {
-         app.executeSearch();
-       }
-     });
-     this.initState = true;
-     app.executeSearch();
-     return this.initState;
-   }
+    /* initialize, attach 'return' submit listener to text box */
+    let el = document.getElementById('gameQuery');
+    let lastSearch = localStorage.getItem('search');
+    el.value = (lastSearch)
+      ? lastSearch
+      : seedSearch; //initialize
+    el.addEventListener('keypress', function(e) {
+      if (e.keyCode == 13) {
+        app.executeSearch();
+      }
+    });
+    this.initState = true;
+    app.executeSearch();
+    return this.initState;
+  }
 }
 /* pager is the main content - twitch navigation tool */
 var app = new App();

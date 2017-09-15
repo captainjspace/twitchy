@@ -10,10 +10,15 @@ class Pager {
     this._length = itemArray.length;
     this._pageSize = pageSize;
     this._pageCount = Math.ceil(this._length / this.pageSize);
+    this._pagerState = true;
+    this._lastOffset = 0;
   }
 
   get items() {
     return this._items;
+  }
+  set items(items) {
+    this._items = items;
   }
   get total() {
     return this._total;
@@ -24,11 +29,35 @@ class Pager {
   get pageCount() {
     return this._pageCount;
   }
+  set pageCount(pageCount) {
+    this._pageCount = pageCount;
+  }
   get currentPage() {
     return this._currentPage;
   }
   set currentPage(currentPage) {
     this._currentPage = currentPage;
+  }
+  get pagerState() {
+    return this._pagerState;
+  }
+  set pagerState(pagerState) {
+    this._pagerState = pagerState;
+  }
+  get lastOffset() {
+    return this._lastOffset;
+  }
+  set lastOffset(lastOffset) {
+    this._lastOffset = lastOffset;
+  }
+
+  addItems(items) {
+    items.forEach((i) => {this._items.push(i)});
+    this.pageCount = Math.ceil(this.items.length / this.pageSize);
+  }
+
+  sort() {
+    this._items.sort( (a,b) => { return b.viewerCount - a.viewerCount });
   }
 
   prevPage() {
@@ -57,12 +86,17 @@ class Pager {
       <div class="container">
         <div class="pager">
           <div id="total">Total Results: ${this.total}
-            <span class="small">(limit 100 - retrieved ${this.items.length} - default offset: 0)</span>
+            <span class="small">
+              (retrieved <span id="retrieved">${this.items.length}</span> - last offset:
+                <span id="lastOffset">${this.lastOffset}</span> - variance:
+                <span id="variance">${this.total-this.items.length}</span>)
+            </span>
           </div>
           <div id="navButtons">
+            <span class="small"> ${this.pageSize} items per page </span>
             <input value="<<" type="button" onclick="app.first()" />
             <input value="<" type="button" onclick="app.prev();" />
-            (page)${this.currentPage} of ${this.pageCount}
+            Page ${this.currentPage} of <span id="currentPageCount">${this.pageCount}</span> pages
             <input value=">" type="button" onclick="app.next()" />
             <input value=">>" type="button" onclick="app.last()" />
           </div>

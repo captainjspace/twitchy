@@ -12,6 +12,7 @@ class Item {
     this._description = "";
     this._channelName = "";
     this._channelMature = false;
+    this._raw = {};
     //force browser to download image early - it's smart, and will use cache copy.
     this._image = new Image();
   }
@@ -79,11 +80,27 @@ class Item {
     this._channelMature = channelMature;
   }
 
+  get raw() {
+    return this._raw;
+  }
+  set raw(raw) {
+    this._raw = raw;
+  }
+
+  /* raw json display div */
+  displayRaw() {
+    let divText = `
+      <div id="itemRaw" class="raw">
+        <pre><span class="small">${JSON.stringify(this.raw, null, 2)}</small></pre>
+      </div>
+    `;
+    return divText;
+  }
   /* template literals are awesome */
   toDiv() {
     let htmlTemplate = `
         <div class="item">
-          <div>
+          <div class="img-container-spacer">
             <div class="img-container">
               <span></span>
               <img class="stream-image" alt="...Still Loading ${this.img}"
@@ -98,6 +115,7 @@ class Item {
             <div class="game">
               ${this.gameName} - ${this.viewerCount} Viewers
             </div>
+            ${this.displayRaw()}
             <div class="description">
               <span class="field-name">Stream Description:</span>
               ${this.description}
