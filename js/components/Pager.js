@@ -51,11 +51,20 @@ class Pager {
     this._lastOffset = lastOffset;
   }
 
+  /* takes array of items adds to existing and updates pageCount */
   addItems(items) {
     items.forEach((i) => {this._items.push(i)});
     this.pageCount = Math.ceil(this.items.length / this.pageSize);
   }
 
+  getItemById(id) {
+    for (let i of this.items) {
+      if (i.raw._id == id) return i;
+    }
+    return -1;
+  }
+
+  /* force reverse sort by viewer count after fully loaded */
   sort() {
     this._items.sort( (a,b) => { return b.viewerCount - a.viewerCount });
   }

@@ -148,7 +148,7 @@ class App {
     document.getElementById('retrieved').textContent = this.pager.items.length;
     document.getElementById('lastOffset').textContent = this.pager.lastOffset;
     document.getElementById('currentPageCount').textContent = this.pager.pageCount;
-    document.getElementById('variance').textContent = this.pager.total-this.pager.items.length;
+    document.getElementById('variance').textContent = this.pager.total - this.pager.items.length;
   }
 
   /*
@@ -163,16 +163,16 @@ class App {
     let offset = chunk;
     while (offset < max) {
       dataService.getStreamData(this.currentSearch, offset).then((response) => {
-        let _offset=offset
+        let _offset = offset
         let items = this.parseItems(response);
         this.pager.addItems(items);
-        this.pager.lastOffset=offset;
+        this.pager.lastOffset = offset;
         this.updatePagerNav(offset);
         this.pager.sort();
       }).catch((err) => {
         console.log(err);
       });
-      offset+=chunk;
+      offset += chunk;
     }
     return true;
   }
@@ -194,17 +194,35 @@ class App {
   }
 
   /*
+   * Queues up request to upgrade to large image on screen.
+   * Could potentially get get downgraded to medium on lazyLoad
+   */
+  upgradeImage(id) {
+    let item = this.pager.getItemById(id);
+    let imgEl = document.getElementById(id);
+    if (imgEl.src != item.raw.preview.large) {
+      let i = new Image();
+      i.src = item.raw.preview.large;
+      i.onload = () => {
+        imgEl.src = i.src;
+        item.src=i.src;
+      }
+    }
+  }
+  /*
    * set feed for twitch tv video player, blocks channels marked mature
    * @param {string} channelName - name of channel to load
    * @param {boolean} mature - is the channel for mature audiences
   */
-  launchVideo(channelName, mature) {
+  launchVideo(channelName, mature, id) {
+    this.upgradeImage(id);
     let url = 'https://player.twitch.tv/?muted=false&channel=' + channelName;
     if (mature) {
       //mature content cannot be viewed anonymously
-      alert('Mature channel access not allowed');
+      window.status = 'Mature channel access not allowed';
     } else {
       document.getElementById('vidPlayer').src = url;
+      window.status = 'Now Playing ' + channelName + '@' + url;
       return true;
     };
     return false;
@@ -221,7 +239,7 @@ class App {
     /* just demonstrating manipulation of style/DOM from js and attaching listeners */
     let appHTMLContainer = document.createElement('div');
     appHTMLContainer.id = 'app';
-    appHTMLContainer.style.width='800px';
+    appHTMLContainer.style.width = '800px';
     /* query form */
     let queryForm = document.createElement('div');
     queryForm.id = 'queryForm';

@@ -29,17 +29,26 @@ div#tv {
   text-align: right;
 }
 
+/* still working on this */
+div#tv:hover #vidPlayer {
+  height:400px;
+  width:600px;
+}
+
 #vidPlayer {
   align: right;
   height: 100px;
   width: 150px;
   overflow: none;
   border: 0;
+  -webkit-transition: all 1.2s ease;
+  transition: all 1.2s ease;
 }
 
 div#queryForm {
   padding-bottom: 10px;
   padding-top: 20px;
+  height: 100px;
 }
 
 div.flex-column {
@@ -51,11 +60,9 @@ div.flex-column {
   flex-flow: row nowrap;
 }
 
-
 /*
 Pager Style
 */
-
 div.pager {
   display: -webkit-flex;
   display: flex;
@@ -95,13 +102,15 @@ div.item {
 }
 
 div.img-container-spacer {
-  width: 165px;
-  height: 114px;
+  width: 165px !important;
+  height: 114px !important;
   flex-shrink: 0;
 }
 
 div.img-container {
-  padding-right: 20pt;
+  width:125px;
+  height:94px;
+  padding-right: 20px;
   margin: 10px 10px 10px 10px;
   border: 1px solid black;
   flex-shrink: 0;
@@ -128,16 +137,21 @@ div.txt-container:hover div.raw {
 div.raw {
   visibility:hidden;
   opacity:0;
-  -webkit-transition:visibility 1.2s linear,opacity 1.2s linear; width 1.2s;
-  transition:visibility 1.2s linear,opacity 1.2s linear; width 1.2s;
+  -webkit-transition: all 2s ease;
+  -moz-transition: all 2s ease;
+  -o-transition: all 2s ease;
+  -ms-transition: all 2s ease;
+  transition: all 2s ease;
   position: fixed;
-  top: 110px;
+  top: 140px;
   left: 820px;
+  width: 300px;
+  height:450px;
   overflow:scroll;
 }
 div.raw:hover {
   height:558px;
-  width:300px;
+  width:600px;
 }
 
 span.field-name {
@@ -150,7 +164,11 @@ img {
 }
 
 img.stream-image {
-  transition: 0.3s ease;
+  margin:0;
+  padding:0px 0px 0px 10px;
+  transition: all 0.7s ease;
+  width: inherit;
+  height: inherit;
 }
 
 img.stream-image:hover {

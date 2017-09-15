@@ -30,6 +30,20 @@ class Item {
   set img(img) {
     this._img = img;
     this.image.src = img;
+    /* start upgrading to medium */
+    this._image.onload = () => {
+      this._image.src = this._raw.preview.medium;
+      this._image.onload = () => {
+        this._img = this._image.src;
+        let i = document.getElementById(this.id);
+        if (i) i.src=this._image.src;
+        this._image.src = this._raw.preview.large;
+        this._image.onload = () => {
+          this._img = this._image.src;
+            if (i) i.src=this._image.src;
+        }
+      }
+    }
   }
   //image cache
   get image() {
@@ -38,6 +52,7 @@ class Item {
   set image(img) {
     this._image.src = img;
   }
+
   get streamDisplayName() {
     return this._streamDisplayName;
   }
@@ -104,7 +119,8 @@ class Item {
             <div class="img-container">
               <span></span>
               <img class="stream-image" alt="...Still Loading ${this.img}"
-                   id="${this.id}" src="${this.img}" onClick="app.launchVideo('${this.channelName}', ${this.channelMature});"/>
+                   id="${this.id}" src="${this.img}"
+                   onClick="app.launchVideo('${this.channelName}', ${this.channelMature}, ${this.id});"/>
             </div>
           </div>
 
