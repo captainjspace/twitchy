@@ -29,11 +29,12 @@ div#tv {
   text-align: right;
 }
 
-/* still working on this */
+/* still working on this
 div#tv:hover #vidPlayer {
   height:400px;
   width:600px;
 }
+*/
 
 #vidPlayer {
   align: right;
