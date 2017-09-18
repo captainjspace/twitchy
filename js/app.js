@@ -37,6 +37,7 @@ class App {
     this._initState = false;
     this._pager = undefined;
     this._currentSearch = "";
+    this._currentVideo = "Click on Images";
   }
 
   //getter-setter
@@ -51,6 +52,12 @@ class App {
   }
   set currentSearch(currentSearch) {
     this._currentSearch = currentSearch;
+  }
+  get currentVideo() {
+    return this._currentVideo;
+  }
+  set currentVideo(currentVideo) {
+    this._currentVideo = 'Now Playing: ' + currentVideo;
   }
   get pager() {
     return this._pager;
@@ -213,7 +220,7 @@ class App {
    * @param {origText} - current text (channelName playing)
    * @param {videoStatus} - handle to tv caption span
    */
-  upgradeImage(id, mature, origText, videoStatus) {
+  upgradeImage(id, mature, videoStatus) {
 
     /* start image download */
     let item = this.pager.getItemById(id);
@@ -251,12 +258,12 @@ class App {
       imgEl.style.webkitAnimationName = "";
       /* reset caption to what's playing if mature requested */
       if (mature) {
-        videoStatus.textContent = origText;
+        videoStatus.textContent = this.currentVideo;
         videoStatus.style.color = 'white';
       }
     });
   }
-  
+
   /*
    * set feed for twitch tv video player, blocks channels marked mature
    * @param {string} channelName - name of channel to load
@@ -269,7 +276,7 @@ class App {
     let origText = videoStatus.textContent;
 
     /* call GUI fluff */
-    this.upgradeImage(id, mature, origText, videoStatus);
+    this.upgradeImage(id, mature, videoStatus);
 
     if (mature) {
       //mature content cannot be viewed anonymously
@@ -278,7 +285,8 @@ class App {
     } else {
       //launchVideo
       document.getElementById('vidPlayer').src = url;
-      videoStatus.textContent = 'Now Playing: ' + channelName;
+      this.currentVideo = channelName;
+      videoStatus.textContent = this.currentVideo;
       videoStatus.style.color = 'white';
       return true;
     };
