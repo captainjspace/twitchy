@@ -16,11 +16,14 @@ const mastHTML = `
                onClick="app.executeSearch()")>
       </div>
       <div id="tv">
-        <iframe
-          id="vidPlayer"
-          src=""
-          allowfullscreen="true">
-        </iframe>
+        <div><span class="small" id="videoStatus"></span></div>
+        <div>
+          <iframe
+            id="vidPlayer"
+            src=""
+            allowfullscreen="true">
+          </iframe>
+        </div>
       </div>
     </div>
 `;
@@ -143,14 +146,6 @@ class App {
     this.renderView();
   }
 
-  /* container function for pager nav updates while lazy loading */
-  updatePagerNav(offset) {
-    document.getElementById('retrieved').textContent = this.pager.items.length;
-    document.getElementById('lastOffset').textContent = this.pager.lastOffset;
-    document.getElementById('currentPageCount').textContent = this.pager.pageCount;
-    document.getElementById('variance').textContent = this.pager.total - this.pager.items.length;
-  }
-
   /*
    * lazyLoad kicks loops kicks of async requests to get all streams up to the expected total
    * the variance is tracked in pager, twitch totals seem out of sync with actual live streams
@@ -167,7 +162,7 @@ class App {
         let items = this.parseItems(response);
         this.pager.addItems(items);
         this.pager.lastOffset = offset;
-        this.updatePagerNav(offset);
+        this.pager.updatePagerNav();
         this.pager.sort();
       }).catch((err) => {
         console.log(err);
@@ -193,36 +188,98 @@ class App {
     return true;
   }
 
+  /* UI - IMAGE AND VIDEO OPERATIONS */
+  /* generic find rule function -> specific for move Image */
+  getImageMoveRule() {
+    let ss = document.styleSheets[0];
+    for (var j = 0; j < ss.cssRules.length; j++) {
+      if (ss.cssRules[j].name == "moveImage") {
+        return ss.cssRules[j];
+      }
+    }
+  }
+
   /*
-   * Queues up request to upgrade to large image on screen.
-   * Could potentially get get downgraded to medium on lazyLoad
+   * facade pattern function - manipulates
+   * css animation, vidstatus, image downloads and events
+   * Queues up request to upgrade to large image on screen if not large
+   * attaches img src update event on lodd.
+   * TODO: Could potentially get get downgraded to medium on lazyLoad, if we are ahead
+   * customizes animation for image location
+   * start animation sending image (graphically) to vidPlayer
+   * attaches event to end animation to clean up img state, and vid status
+   * @param {id} - id of img
+   * @param {mature} - boolean -determines whether to reset videoStatus text-align
+   * @param {origText} - current text (channelName playing)
+   * @param {videoStatus} - handle to tv caption span
    */
-  upgradeImage(id) {
+  upgradeImage(id, mature, origText, videoStatus) {
+
+    /* start image download */
     let item = this.pager.getItemById(id);
     let imgEl = document.getElementById(id);
+
     if (imgEl.src != item.raw.preview.large) {
       let i = new Image();
       i.src = item.raw.preview.large;
       i.onload = () => {
         imgEl.src = i.src;
-        item.src=i.src;
+        item.src = i.src;
       }
     }
+    /* call image animation -> vid Player */
+    var rect = imgEl.getBoundingClientRect();
+    let rule = this.getImageMoveRule();
+    /* generate custom margin-top for this image */
+    let kf = `
+      50% {
+        margin-top:   -${rect.top + 30}px;
+        margin-left: 635px;
+        transform: scale(.2);
+      }
+    `;
+    rule.deleteRule('50%');
+    rule.appendRule(kf, '50%');
+
+    /* add style & class */
+    imgEl.style.webkitAnimationName += ' ' + 'moveImage';
+    imgEl.classList.add('animate');
+
+    imgEl.addEventListener('animationend', () => {
+      /* remove style & class to reactive */
+      imgEl.classList.remove('animate');
+      imgEl.style.webkitAnimationName = "";
+      /* reset caption to what's playing if mature requested */
+      if (mature) {
+        videoStatus.textContent = origText;
+        videoStatus.style.color = 'white';
+      }
+    });
   }
+  
   /*
    * set feed for twitch tv video player, blocks channels marked mature
    * @param {string} channelName - name of channel to load
    * @param {boolean} mature - is the channel for mature audiences
   */
   launchVideo(channelName, mature, id) {
-    this.upgradeImage(id);
+
     let url = 'https://player.twitch.tv/?muted=false&channel=' + channelName;
+    let videoStatus = document.getElementById('videoStatus');
+    let origText = videoStatus.textContent;
+
+    /* call GUI fluff */
+    this.upgradeImage(id, mature, origText, videoStatus);
+
     if (mature) {
       //mature content cannot be viewed anonymously
-      window.status = 'Mature channel access not allowed';
+      videoStatus.textContent = 'Mature channel access not allowed'
+      videoStatus.style.color = 'yellow';
     } else {
+      //launchVideo
       document.getElementById('vidPlayer').src = url;
-      window.status = 'Now Playing ' + channelName + '@' + url;
+      videoStatus.textContent = 'Now Playing: ' + channelName;
+      videoStatus.style.color = 'white';
       return true;
     };
     return false;

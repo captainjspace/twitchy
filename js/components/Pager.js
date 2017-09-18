@@ -117,4 +117,12 @@ class Pager {
     `;
     return pageContainerHTML;
   }
+
+  /* DOM update function for pager nav updates while lazy loading */
+  updatePagerNav() {
+    document.getElementById('retrieved').textContent = this.items.length;
+    document.getElementById('lastOffset').textContent = this.lastOffset;
+    document.getElementById('currentPageCount').textContent = this.pageCount;
+    document.getElementById('variance').textContent = this.total - this.items.length;
+  }
 }

@@ -14,27 +14,40 @@ div#sonyLogo {
   flex: 0 0 auto;
   width: 35%;
   text-align: left;
+  padding-top:20px
 }
 
 div#searchBox {
   flex: 0 0 auto;
-  padding-top: 35px;
+  padding-top: 55px;
   padding-left: 20px;
   text-align: center;
 }
 
+@-webkit-keyframes moveAndExpandTV {
+  from {
+    margin-top:  0vh;
+    margin-left: 0vw;
+  }
+  to {
+    margin-top:  300px;
+    margin-left: -450px;
+  }
+}
 div#tv {
-  flex: 0 0;
-  padding-left: 120px;
-  text-align: right;
+  padding-left: 130px;
+  text-align: center;
+  z-index:9999;
 }
 
-/* still working on this
+
 div#tv:hover #vidPlayer {
-  height:400px;
-  width:600px;
+   margin-top:  150px;
+   margin-left: -450px;
+   height:400px;
+   width:600px;
 }
-*/
+
 
 #vidPlayer {
   align: right;
@@ -48,8 +61,15 @@ div#tv:hover #vidPlayer {
 
 div#queryForm {
   padding-bottom: 10px;
-  padding-top: 20px;
-  height: 100px;
+  padding-top: 1px;
+  height: 120px;
+}
+
+div.flex-row {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
 }
 
 div.flex-column {
@@ -159,20 +179,47 @@ span.field-name {
   font-style: italic;
 }
 
+/* image classes */
+@-webkit-keyframes moveImage {
+  from {
+    margin-top:  0vh;
+    margin-left: 0vw;
+  }
+  50% {
+    margin-top:  -20vh; /* this value gets overwritten in javascript */
+    margin-left: 65vw;
+    transform: scale(.2);
+  }
+  to {
+    margin-top:  0vh;
+    margin-left: 0vw;
+  }
+}
+
 img {
   margin: 10px 10px 10px 10px;
   padding: 10px 5px 5px 10px;
 }
 
 img.stream-image {
+  position:absolute;
   margin:0;
   padding:0px 0px 0px 10px;
   transition: all 0.7s ease;
   width: inherit;
   height: inherit;
 }
+img.stream-image.animate {
+	animation-name: moveImage;
+	animation-duration: 2s;
+	animation-timing-function: ease;
+	animation-iteration-count: 1;
+	animation-direction:alternate;
+	animation-delay: 0;
+	animation-play-state:running;
+	animation-fill-mode: both;
+}
 
 img.stream-image:hover {
   transform: scale(2, 2);
-  opacity: 1;
 }
