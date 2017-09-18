@@ -10,8 +10,10 @@ class TwitchService {
       clientId: "uo6dggojyb8d6soh92zknwmi5ej1q2"
     };
     this._data = {};
+    this._chunk = 50;
   }
 
+  get chunk() { return this._chunk;}
 
   /*
    * wraps the json request in a promise, defaults offset to zero, fixed limit
@@ -19,7 +21,7 @@ class TwitchService {
    */
   getStreamData(game, offset=0) {
     //let _offset = (offset) ? offset : 0;
-    let url = this._baseUrl + game + '&offset='+offset+'&limit=50';
+    let url = this._baseUrl + game + '&offset='+offset+'&limit=' + this.chunk;
     return new Promise((resolve, reject) => {
       let xhr = new XMLHttpRequest();
       xhr.open('GET', url);

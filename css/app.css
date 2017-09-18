@@ -12,38 +12,30 @@ div.container {
 
 div#sonyLogo {
   flex: 0 0 auto;
-  width: 35%;
+  width: 30%;
   text-align: left;
-  padding-top:20px
+  /* top, right, bottom, left */
+  margin: 15px 10px 10px 10px;
+  padding: 30px 0px 5px 20px;
 }
 
 div#searchBox {
   flex: 0 0 auto;
   padding-top: 55px;
-  padding-left: 20px;
+  padding-left: 10px;
   text-align: center;
 }
 
-@-webkit-keyframes moveAndExpandTV {
-  from {
-    margin-top:  0vh;
-    margin-left: 0vw;
-  }
-  to {
-    margin-top:  300px;
-    margin-left: -450px;
-  }
-}
 div#tv {
   padding-left: 130px;
   text-align: center;
-  z-index:9999;
+  z-index:99;
 }
 
 
 div#tv:hover #vidPlayer {
-   margin-top:  150px;
-   margin-left: -450px;
+   margin-top:  184px;
+   margin-left: -445px;
    height:400px;
    width:600px;
 }
@@ -60,8 +52,7 @@ div#tv:hover #vidPlayer {
 }
 
 div#queryForm {
-  padding-bottom: 10px;
-  padding-top: 1px;
+  padding: 1px 0px 10px 0px;
   height: 120px;
 }
 
@@ -119,12 +110,13 @@ Item Style
 */
 
 div.item {
+  padding-left: 10px;
   display: flex;
   height: 114px;
 }
 
 div.img-container-spacer {
-  width: 165px !important;
+  width: 145px !important;
   height: 114px !important;
   flex-shrink: 0;
 }
@@ -132,7 +124,7 @@ div.img-container-spacer {
 div.img-container {
   width:125px;
   height:94px;
-  padding-right: 20px;
+  /* padding-right: 20px; */
   margin: 10px 10px 10px 10px;
   border: 1px solid black;
   flex-shrink: 0;
@@ -180,7 +172,7 @@ span.field-name {
   font-style: italic;
 }
 
-/* image classes */
+/* item image classes & animations */
 @-webkit-keyframes moveImage {
   from {
     margin-top:  0vh;
@@ -189,7 +181,7 @@ span.field-name {
   50% {
     margin-top:  -20vh; /* this value gets overwritten in javascript */
     margin-left: 65vw;
-    transform: scale(.2);
+    transform: scale(.1);
   }
   to {
     margin-top:  0vh;
@@ -197,15 +189,25 @@ span.field-name {
   }
 }
 
+@-webkit-keyframes flipReplaceX
+{
+    to {
+      transform: rotateX(360deg);
+    }
+}
+@-webkit-keyframes flipReplaceY
+{
+    to {
+      transform: rotateY(360deg);
+    }
+}
+
 img {
-  margin: 10px 10px 10px 10px;
-  padding: 10px 5px 5px 10px;
+
 }
 
 img.stream-image {
   position:absolute;
-  margin:0;
-  padding:0px 0px 0px 10px;
   transition: all 0.7s ease;
   width: inherit;
   height: inherit;
@@ -220,7 +222,26 @@ img.stream-image.animate {
 	animation-play-state:running;
 	animation-fill-mode: both;
 }
-
+img.stream-image.replaceX {
+	animation-name: flipReplaceX;
+	animation-duration: 1s;
+	animation-timing-function: ease;
+	animation-iteration-count: 1;
+	animation-direction:alternate;
+	animation-delay: 0;
+	animation-play-state:running;
+	animation-fill-mode: both;
+}
+img.stream-image.replaceY {
+	animation-name: flipReplaceY;
+	animation-duration: 1s;
+	animation-timing-function: ease;
+	animation-iteration-count: 1;
+	animation-direction:alternate;
+	animation-delay: 0;
+	animation-play-state:running;
+	animation-fill-mode: both;
+}
 img.stream-image:hover {
   transform: scale(2, 2);
 }

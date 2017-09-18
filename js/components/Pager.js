@@ -92,6 +92,7 @@ class Pager {
       pagerHtml += this.items[i].toDiv();
     }
     let pageContainerHTML = `
+      <content>
       <div class="container">
         <div class="pager">
           <div id="total">Total Results: ${this.total}
@@ -108,21 +109,27 @@ class Pager {
             Page ${this.currentPage} of <span id="currentPageCount">${this.pageCount}</span> pages
             <input value=">" type="button" onclick="app.next()" />
             <input value=">>" type="button" onclick="app.last()" />
-          </div>
+            <input id="pageSlider" type="range" value="${this.currentPage}" min="1" max="${this.pageCount}" step="1" onChange="app.setPage(this.value)"/>
+           </div>
         </div>
         <div id="itemDisplay">
            ${pagerHtml}
         </div>
       </div>
+    </content>
     `;
     return pageContainerHTML;
   }
 
-  /* DOM update function for pager nav updates while lazy loading */
+  /*
+   * DOM update function for pager nav updates while lazy loading
+   * could place these in setter in theory but this is organized..
+   */
   updatePagerNav() {
     document.getElementById('retrieved').textContent = this.items.length;
     document.getElementById('lastOffset').textContent = this.lastOffset;
     document.getElementById('currentPageCount').textContent = this.pageCount;
     document.getElementById('variance').textContent = this.total - this.items.length;
+    document.getElementById('pageSlider').max = this.pageCount;
   }
 }

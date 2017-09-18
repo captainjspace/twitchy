@@ -1,3 +1,4 @@
+'use strict';
 /* seed search */
 const seedSearch = 'destiny';
 
@@ -11,7 +12,7 @@ const mastHTML = `
         <img src="img/navigation_home_ps-logo-us.png">
       </div>
       <div id="searchBox">
-        <input type="text" id="gameQuery">
+        <input type="text" id="gameQuery" autofocus />
         <input type="button" value="Search"
                onClick="app.executeSearch()")>
       </div>
@@ -68,13 +69,14 @@ class App {
 
   //app methods
   /* creates items from twitch JSON (parsed) */
-  parseItems(data) {
+  parseItems(data, lazy=false) {
     let items = [];
     for (let x of data.streams) {
       /* too many items to cleanly use a constructor */
       var i = new Item();
       i.id = x._id;
       i.img = x.preview.small;
+      if (!lazy) i.image = x.preview.small;
       i.streamDisplayName = x.channel.display_name;
       i.gameName = x.game;
       i.viewerCount = x.viewers;
@@ -152,21 +154,40 @@ class App {
     this.pager.currentPage = this.pager.pageCount;
     this.renderView();
   }
+  /* for slider */
+  setPage(page) {
+    if (this.pager === undefined)
+      return false;
+    this.pager.currentPage = page;
+    this.renderView();
+  }
+
+  /*
+   * kicks off image loading and animation for on screen images
+   * @param {el} - img element
+   */
+  itemUpgrade(el) {
+    let item = this.pager.getItemById(el.id);
+    /* if not already large start upgrade */
+    if (item.raw.preview.large != el.src)
+      item.activeContentImageUpgrade(el);
+  }
 
   /*
    * lazyLoad kicks loops kicks of async requests to get all streams up to the expected total
    * the variance is tracked in pager, twitch totals seem out of sync with actual live streams
    */
   lazyLoad() {
-    const chunk = 50;
+    //const chunk = 50;
     let dataService = new TwitchService();
+    let chunk = dataService.chunk;
     let max = this.pager.total;
 
     let offset = chunk;
     while (offset < max) {
       dataService.getStreamData(this.currentSearch, offset).then((response) => {
         let _offset = offset
-        let items = this.parseItems(response);
+        let items = this.parseItems(response,true);
         this.pager.addItems(items);
         this.pager.lastOffset = offset;
         this.pager.updatePagerNav();
@@ -178,6 +199,7 @@ class App {
     }
     return true;
   }
+
   /*
    * new search calls twitch service with promises
    */
@@ -185,6 +207,7 @@ class App {
     if (!this.initState)
       return false;
     this.currentSearch = document.getElementById('gameQuery').value;
+    //document.getElementById('vidPlayer').src="";
     let dataService = new TwitchService();
     dataService.getStreamData(this.currentSearch).then((response) => {
       this.initPager(response);
@@ -208,10 +231,7 @@ class App {
 
   /*
    * facade pattern function - manipulates
-   * css animation, vidstatus, image downloads and events
-   * Queues up request to upgrade to large image on screen if not large
-   * attaches img src update event on lodd.
-   * TODO: Could potentially get get downgraded to medium on lazyLoad, if we are ahead
+   * css animation, vidstatus
    * customizes animation for image location
    * start animation sending image (graphically) to vidPlayer
    * attaches event to end animation to clean up img state, and vid status
@@ -220,29 +240,19 @@ class App {
    * @param {origText} - current text (channelName playing)
    * @param {videoStatus} - handle to tv caption span
    */
-  upgradeImage(id, mature, videoStatus) {
+  sendImageToVideoPlayer(id, mature, videoStatus) {
 
-    /* start image download */
-    let item = this.pager.getItemById(id);
-    let imgEl = document.getElementById(id);
-
-    if (imgEl.src != item.raw.preview.large) {
-      let i = new Image();
-      i.src = item.raw.preview.large;
-      i.onload = () => {
-        imgEl.src = i.src;
-        item.src = i.src;
-      }
-    }
     /* call image animation -> vid Player */
+    let imgEl = document.getElementById(id);
     var rect = imgEl.getBoundingClientRect();
     let rule = this.getImageMoveRule();
+
     /* generate custom margin-top for this image */
     let kf = `
       50% {
         margin-top:   -${rect.top + 30}px;
         margin-left: 635px;
-        transform: scale(.2);
+        transform: scale(.1);
       }
     `;
     rule.deleteRule('50%');
@@ -270,13 +280,12 @@ class App {
    * @param {boolean} mature - is the channel for mature audiences
   */
   launchVideo(channelName, mature, id) {
-
     let url = 'https://player.twitch.tv/?muted=false&channel=' + channelName;
     let videoStatus = document.getElementById('videoStatus');
     let origText = videoStatus.textContent;
 
     /* call GUI fluff */
-    this.upgradeImage(id, mature, videoStatus);
+    this.sendImageToVideoPlayer(id, mature, videoStatus);
 
     if (mature) {
       //mature content cannot be viewed anonymously
