@@ -7,7 +7,7 @@ class TwitchService {
     this._baseUrl = "https://api.twitch.tv/kraken/search/streams?query=";
     this._headers = {
       accept: "application/vnd.twitchtv.v5+json",
-      clientId: "uo6dggojyb8d6soh92zknwmi5ej1q2"
+      clientId: "w3moe641p9cucblko66t42khea6rxk"
     };
     this._data = {};
     this._chunk = 50;

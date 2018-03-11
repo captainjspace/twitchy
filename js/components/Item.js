@@ -170,30 +170,32 @@ class Item {
     return divText;
   }
   /* template literals are awesome */
-  toDiv() {
-    let htmlTemplate = `
-        <div class="item">
+  toDiv(itemElementId) {
+    const htmlTemplate = `
+        <div id="item-${itemElementId}" class="item">
           <div class="img-container-spacer">
             <div class="img-container">
               <span></span>
               <img class="stream-image" alt="...Still Loading ${this.img}"
-                   id="${this.id}" src="${this.img}"
+                   id="img-${itemElementId}" item_id="${this.id}" src="${this.img}"
                    onLoad="app.itemUpgrade(this);"
-                   onClick="app.launchVideo('${this.channelName}', ${this.channelMature}, ${this.id});"/>
+                   onClick="app.launchVideo('${this.channelName}', ${this.mature}, 'img-${itemElementId}');"/>
             </div>
           </div>
 
           <div class="txt-container">
-            <div class="streamDisplayName">
+            <div id="streamDisplayName-${itemElementId}" class="streamDisplayName">
               ${this.streamDisplayName}
             </div>
             <div class="game">
-              ${this.gameName} - ${this.viewerCount} Viewers
+              <span id="game-${itemElementId}">${this.gameName}</span>
+               -
+              <span id="viewers-${itemElementId}">${this.viewerCount}</span> Viewers
             </div>
             ${this.displayRaw()}
             <div class="description">
               <span class="field-name">Stream Description:</span>
-              ${this.description}
+              <span id="desc-${itemElementId}">${this.description}</span>
             </div>
           </div>
           <div></div>

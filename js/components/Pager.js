@@ -10,8 +10,9 @@ class Pager {
     this._length = itemArray.length;
     this._pageSize = pageSize;
     this._pageCount = Math.ceil(this._length / this.pageSize);
-    this._pagerState = true;
+    this._initState = false;
     this._lastOffset = 0;
+    this._pageElements;
   }
 
   get items() {
@@ -51,6 +52,13 @@ class Pager {
     this._lastOffset = lastOffset;
   }
 
+  get pagerElements() {
+    return this._pagerElements;
+  }
+  set pagerElements(pageElements) {
+    this._pagerElements = pagerElements;
+  }
+
   /* takes array of items adds to existing and updates pageCount */
   addItems(items) {
     items.forEach((i) => {this._items.push(i)});
@@ -86,10 +94,11 @@ class Pager {
    * (i.e., avoid click event re-attachment)
    */
   toDiv() {
-    let pagerHtml = "";
+    let itemsHTML = "";
     let start = (this.pageSize * this.currentPage - this.pageSize)
-    for (let i = start; i < Math.min((start + this.pageSize), this.items.length); i++) {
-      pagerHtml += this.items[i].toDiv();
+    let counter = 1;
+    for (let i = start; i < Math.min((start + this.pageSize), this.items.length); i++ & ++counter) {
+      itemsHTML += this.items[i].toDiv(counter);
     }
     let pageContainerHTML = `
       <content>
@@ -104,16 +113,16 @@ class Pager {
           </div>
           <div id="navButtons">
             <span class="small"> ${this.pageSize} items per page </span>
-            <input value="<<" type="button" onclick="app.first()" />
-            <input value="<" type="button" onclick="app.prev();" />
+            <input id="first" value="<<" type="button" />
+            <input id="prev" value="<" type="button" />
             Page ${this.currentPage} of <span id="currentPageCount">${this.pageCount}</span> pages
-            <input value=">" type="button" onclick="app.next()" />
-            <input value=">>" type="button" onclick="app.last()" />
-            <input id="pageSlider" type="range" value="${this.currentPage}" min="1" max="${this.pageCount}" step="1" onChange="app.setPage(this.value)"/>
+            <input id="next" value=">" type="button" />
+            <input id="last" value=">>" type="button" />
+            <input id="pageSlider" type="range" value="${this.currentPage}" min="1" max="${this.pageCount}" step="1" />
            </div>
         </div>
         <div id="itemDisplay">
-           ${pagerHtml}
+           ${itemsHTML}
         </div>
       </div>
     </content>
@@ -132,4 +141,27 @@ class Pager {
     document.getElementById('variance').textContent = this.total - this.items.length;
     document.getElementById('pageSlider').max = this.pageCount;
   }
+
+  getElementReferences() {
+    this.pageElements = {
+      first: document.getElementById('first'),
+      prev: document.getElementById('prev'),
+      next: document.getElementById('next'),
+      last: document.getElementById('last'),
+      pageSlider: document.getElementById('pageSlider')
+    };
+  }
+
+  assignEvents() {
+
+    //if (this.pagerElements == 'undefined') getElementReferences();
+    this.getElementReferences();
+    this.pageElements.first.addEventListener('click', () => app.first());
+    this.pageElements.prev.addEventListener('click', () => app.prev());
+    this.pageElements.next.addEventListener('click', () => app.next());
+    this.pageElements.last.addEventListener('click', () => app.last());
+    this.pageElements.pageSlider.addEventListener('change', () => app.setPage(this.pageElements.pageSlider.value));
+  }
+
+
 }

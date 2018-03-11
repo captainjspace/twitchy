@@ -31,7 +31,7 @@ const mastHTML = `
 
 /*
  * @filename App.js
- * Main application facade, wraps core functions
+ * Main application facade, wraps core functions, view controller
  */
 class App {
   constructor() {
@@ -109,7 +109,7 @@ class App {
    * @param {Pager} pager - pager contains all parsed items and nav data
    */
   renderView() {
-    if (this.pager === undefined && this.pager.pagerState === true)
+    if (this.pager === undefined && this.pager.pagerState === false)
       return false;
 
     var pagerBody = document.getElementById("pagerBody");
@@ -121,7 +121,8 @@ class App {
     }
     /* could be more efficient than full div replace here */
     pagerBody.innerHTML = this.pager.toDiv();
-    this.pager.pagerState = false;
+    this.pager.assignEvents();
+    this.pager.initState = true;
     return true;
   }
 
@@ -167,7 +168,7 @@ class App {
    * @param {el} - img element
    */
   itemUpgrade(el) {
-    let item = this.pager.getItemById(el.id);
+    let item = this.pager.getItemById(el.getAttribute('item_id'));
     /* if not already large start upgrade */
     if (item.raw.preview.large != el.src)
       item.activeContentImageUpgrade(el);
